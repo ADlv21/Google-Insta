@@ -29,7 +29,7 @@ def root():
             error_message = str(exc)
 
     # render the template with the last times we have
-    return render_template('index.html', user_data=claims, error_message=error_message)
+    return render_template('login.html', user_data=claims, error_message=error_message)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
