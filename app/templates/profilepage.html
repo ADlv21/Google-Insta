@@ -7,11 +7,11 @@
   <body>
     <header>
       <img src="../static/assets/superman.png" alt="My Profile Picture" />
-      <h1>Username</h1>
+      <h1>{{name}}</h1>
     </header>
     <section class="bio">
       <h2>About Me</h2>
-      <h3>Username</h3>
+      <h3>{{email}}</h3>
       <p>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere fuga aut
         quisquam soluta enim! Libero nihil porro nulla sequi perferendis quos
@@ -30,36 +30,16 @@
     <h2>My Posts</h2>
 
     <section class="posts">
+      {% for item in data %}
       <article>
-        <img src="../static/assets/superman.png" alt="My Post" />
-        <p>My caption for this post.</p>
-        <time>Posted on April 21, 2023</time>
+        <img
+          src="data:image/jpeg;base64,{{ item.image }}"
+          alt="{{item.imagePath}}"
+        />
+        <p>{{ item.caption }}</p>
+        <time>Posted on {{item.createdTime}}</time>
       </article>
-      <article>
-        <img src="../static/assets/superman.png" alt="My Post" />
-        <p>Another caption for my post.</p>
-        <time>Posted on April 20, 2023</time>
-      </article>
-      <article>
-        <img src="../static/assets/superman.png" alt="My Post" />
-        <p>My caption for this post.</p>
-        <time>Posted on April 21, 2023</time>
-      </article>
-      <article>
-        <img src="../static/assets/superman.png" alt="My Post" />
-        <p>Another caption for my post.</p>
-        <time>Posted on April 20, 2023</time>
-      </article>
-      <article>
-        <img src="../static/assets/superman.png" alt="My Post" />
-        <p>My caption for this post.</p>
-        <time>Posted on April 21, 2023</time>
-      </article>
-      <article>
-        <img src="../static/assets/superman.png" alt="My Post" />
-        <p>Another caption for my post.</p>
-        <time>Posted on April 20, 2023</time>
-      </article>
+      {% endfor %}
     </section>
     <footer>
       <p>&copy; 2023 Instagram Ripoff. All Rights Reserved.</p>
