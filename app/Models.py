@@ -1,9 +1,11 @@
+from datetime import datetime
+
+
 class User:
-    def __init__(self, user_id, username, email, password, bio):
+    def __init__(self, user_id, username, email, bio):
         self.user_id = user_id
         self.username = username
         self.email = email
-        self.password = password
         self.bio = bio
         self.following = set()
         self.followers = set()
@@ -25,25 +27,21 @@ class User:
 
 
 class Post:
-    def __init__(self, post_id, image_url, caption, author):
+    def __init__(self, post_id, userId, caption):
         self.post_id = post_id
-        self.image_url = image_url
+        self.userId = userId
+        self.posted_image
         self.caption = caption
-        self.author = author
-        self.likes = set()
+        self.date_posted = datetime.now()
         self.comments = []
-
-    def add_like(self, user):
-        self.likes.add(user.user_id)
-
-    def remove_like(self, user):
-        self.likes.remove(user.user_id)
 
     def add_comment(self, comment):
         self.comments.append(comment)
 
-    def get_num_likes(self):
-        return len(self.likes)
-
     def get_comments(self):
         return self.comments
+
+    def get_posted_image(self):
+        return self.posted_image
+    
+    
