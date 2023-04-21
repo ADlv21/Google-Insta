@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Datastore and Firebase Auth Example</title>
+    <title>Instagram Auth</title>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
-    <link
+    <!--     <link
       type="text/css"
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
-    />
+    /> -->
+    <link type="text/css" rel="stylesheet" href="../static/login_signup.css" />
     <script src="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.js"></script>
     <link
       type="text/css"
@@ -16,12 +17,28 @@
     />
   </head>
   <body>
-    <h1>Datastore and Firebase Auth Example</h1>
+    <h1>Instagram Auth</h1>
+    <div class="container">
+      <div class="auth-container">
+        <img
+          src="../static/assets/insta.png"
+          alt="Instagram Logo"
+          class="logo"
+        />
+        <div id="firebase-auth-container"></div>
+      </div>
+    </div>
 
-    <div id="firebase-auth-container"></div>
-
-    <button id="sign-out" hidden="true">Sign out</button>
-
+    <div class="signout-container">
+      <button
+        class="signout-button"
+        id="sign-out"
+        class="submit-btn"
+        hidden="true"
+      >
+        Sign out
+      </button>
+    </div>
     <div id="login-info" hidden="true">
       <h2>Login Info</h2>
       {% if user_data %}
