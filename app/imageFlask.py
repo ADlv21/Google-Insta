@@ -1,5 +1,5 @@
 from google.cloud import storage
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import base64
 from io import BytesIO
 from PIL import Image
@@ -10,13 +10,14 @@ BUCKET_NAME = 'insta-cloud-384319.appspot.com'
 app = Flask(__name__)
 
 
-@app.route('/img/<username>')
-def getAllUserPostImages(username):
+@app.route('/img')
+def getAllUserPostImages():
+    USERNAME = request.cookies.get('user_id')
     storage_client = storage.Client().from_service_account_json(
         'insta-cloud-384319-beb0cab41c26.json')
 
     bucket = storage_client.get_bucket(BUCKET_NAME)
-    filename = list(bucket.list_blobs(prefix=username))
+    filename = list(bucket.list_blobs(prefix=USERNAME))
 
     image_bytes = []
 

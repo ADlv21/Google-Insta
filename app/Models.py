@@ -43,5 +43,3 @@ class Post:
 
     def get_posted_image(self):
         return self.posted_image
-    
-    
