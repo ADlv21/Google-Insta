@@ -7,7 +7,24 @@
   <body>
     <header>
       <img src="../static/assets/superman.png" alt="My Profile Picture" />
-      <h1>{{name}}</h1>
+      <h1>{{userData.name}}</h1>
+      {% if not myProfile%}
+      <div class="follow-container">
+        {% if amIFollowingThisUser %}
+        <form action="/unfollowuser/{{userData.id}}" method="post">
+          <button class="button" type="submit" id="btn-follow-unfollow">
+            Unfollow
+          </button>
+        </form>
+        {% else %}
+        <form action="/followuser/{{userData.id}}" method="post">
+          <button class="button" type="submit" id="btn-follow-unfollow">
+            Follow
+          </button>
+        </form>
+        {% endif %}
+      </div>
+      {% endif %}
     </header>
     <section class="bio">
       <h2>About Me</h2>
@@ -21,9 +38,17 @@
         autem animi.
       </p>
       <ul>
-        <li><a href="#">Followers: 100</a></li>
-        <li><a href="#">Following: 50</a></li>
-        <li><a href="#">Total Posts: 20</a></li>
+        <li>
+          <a href="/user/{{userData.id}}/followers"
+            >Followers: {{ totalNumberOfFollowers }}</a
+          >
+        </li>
+        <li>
+          <a href="/user/{{userData.id}}/following"
+            >Following: {{ totalNumberOfFollowing }}</a
+          >
+        </li>
+        <li><a href="">Total Posts: {{ totalPosts }}</a></li>
       </ul>
     </section>
 
@@ -47,3 +72,24 @@
     </footer>
   </body>
 </html>
+
+<script>
+  var myUserId = getCookie("user_id");
+  console.log(myUserId);
+
+  // Function to get the value of a cookie
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      var cookies = document.cookie.split(";");
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>

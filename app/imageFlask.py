@@ -4,7 +4,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 
-BUCKET_NAME = 'insta-cloud-384319.appspot.com'
+BUCKET_NAME = 'insta-cloud-99d25.appspot.com'
 
 # Create a Flask application instance
 app = Flask(__name__)
@@ -14,10 +14,10 @@ app = Flask(__name__)
 def getAllUserPostImages():
     USERNAME = request.cookies.get('user_id')
     storage_client = storage.Client().from_service_account_json(
-        'insta-cloud-384319-beb0cab41c26.json')
+        'insta-cloud-99d25-df80f88aaf72.json')
 
     bucket = storage_client.get_bucket(BUCKET_NAME)
-    filename = list(bucket.list_blobs(prefix=USERNAME))
+    filename = list(bucket.list_blobs(prefix=''))
 
     image_bytes = []
 
