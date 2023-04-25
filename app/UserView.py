@@ -11,51 +11,47 @@ datastore_client = datastore.Client()
 def homepage():
     if request.method == 'GET':
 
+        # Logged in user's user id
         USERID = request.cookies.get('user_id')
 
         # userInfo List to Display all users in searchbar
         userInfo = Utils.allUsersInfo()
 
-        # Contains ID of all users in DB
-        USER_ID_LIST = []
-        for i in userInfo:
-            USER_ID_LIST.append(i['id'])
+        # list of users, logged in user is following
+        allFollowingUsers = Utils.allFollowing(USERID)
+
+        # Contains ID of all following users and logged in user
+        User_Id_List = []
+        User_Id_List.append(USERID)
+        for userFollowing in allFollowingUsers:
+            User_Id_List.append(userFollowing['following'])
+
+        # This is correct
+        print(User_Id_List)
 
         # User Data fetched by ID used for displaying posts
-        USERIDLISTDATA = []
-        for user in USER_ID_LIST:
-            query = datastore_client.query(kind='Users')
-            query.add_filter('user_id', '=', user)
-            USERIDLISTDATA.append(list(query.fetch()))
+        followingUsersData = []
+        for user in User_Id_List:
+            followingUsersData.append(Utils.userInfoByID(userId=user))
 
-        query = datastore_client.query(kind='Posts')
-        results = list(query.fetch())
-
-        data = []
-        for result in results:
-            data.append({
-                "postId": result.key.id_or_name,
-                "userId": result['userId'],
-                "caption": result['caption'],
-                "createdTime": datetime.fromtimestamp(result['createdTime']).strftime("%d/%m/%y %H:%M"),
-                "imagePath": result['imagePath']
-            })
+        followingUserPosts = []
+        for user in User_Id_List:
+            followingUserPosts.extend(Utils.fetchPostsByUserId(userId=user))
 
         userImagesDict = Utils.getAllUserPostImages('')
-        for item in data:
+        for item in followingUserPosts:
             image_path = item["imagePath"]
             if image_path in userImagesDict:
                 item["image"] = userImagesDict[image_path]
 
-        sorted_data = sorted(
-            data, key=lambda k: k['createdTime'], reverse=True)
+        sorted_data = sorted(followingUserPosts,
+                             key=lambda k: k['createdTime'], reverse=True)
 
-        for user in USERIDLISTDATA:
-            for data in user:
-                for post in sorted_data:
-                    if data["user_id"] == post["userId"]:
-                        post["email"] = data["email"]
-                        post["name"] = data["name"]
+        for item1 in sorted_data:
+            for item2 in followingUsersData:
+                if item1['userId'] == item2['userId']:
+                    item1['name'] = item2['name']
+                    item1['email'] = item2['email']
 
         """
         FETCH COMMENTS
@@ -69,9 +65,11 @@ def homepage():
                     if "comments" not in post2:
                         post2["comments"] = []
                     post2["comments"].append(post1)
+
         # print(sorted_data)
         # return {'sorted_data': sorted_data, 'comments': comm}
-        # return {'data': userInfo}
+        # return {'data': allFollowingUsers}
+        # return {'Posts': followingUserPosts}
         return render_template('homepage.html', userId=USERID, userData=userInfo, data=sorted_data)
 
 
@@ -95,54 +93,25 @@ def userProfilePage(urlID):
         totalNumberOfFollowing = len(
             Utils.allFollowing(userIdToCheckFollowingOf=urlID))
 
-        # Contains ID of all users in DB
-        USER_ID_LIST = []
-        for i in userInfo:
-            USER_ID_LIST.append(i['id'])
-
-        # User Data fetched by ID used for displaying posts
-        USERIDLISTDATA = []
-        for user in USER_ID_LIST:
-            query = datastore_client.query(kind='Users')
-            query.add_filter('user_id', '=', user)
-            USERIDLISTDATA.append(list(query.fetch()))
-
-        query = datastore_client.query(kind='Posts')
-        query.add_filter('userId', '=', urlID)
-        results = list(query.fetch())
-
-        data = []
-        for result in results:
-            data.append({
-                "postId": result.key.id_or_name,
-                "userId": result['userId'],
-                "imagePath": result['imagePath'],
-                "caption": result['caption'],
-                "createdTime": datetime.fromtimestamp(result['createdTime']).strftime("%Y-%m-%d %H:%M")
-            })
+        postData = Utils.fetchPostsByUserId(userId=urlID)
 
         userImagesDict = Utils.getAllUserPostImages(urlID)
-        for item in data:
+        for item in postData:
             image_path = item["imagePath"]
             if image_path in userImagesDict:
                 item["image"] = userImagesDict[image_path]
 
         sorted_data = sorted(
-            data, key=lambda k: k['createdTime'], reverse=True)
+            postData, key=lambda k: k['createdTime'], reverse=True)
 
-        for user in USERIDLISTDATA:
-            for data in user:
-                for post in sorted_data:
-                    if data["user_id"] == post["userId"]:
-                        post["email"] = data["email"]
-                        post["name"] = data["name"]
+        for item1 in sorted_data:
+            if item1['userId'] == userInfo['userId']:
+                item1['name'] = userInfo['name']
+                item1['email'] = userInfo['email']
 
         # return {'data': len(amIFollowingThisUser)}
-        # return {"data": userInfo}
-        return render_template('profilepage.html', data=sorted_data, userData=userInfo[0], myProfile=isThisMyProfile, amIFollowingThisUser=len(amIFollowingThisUser), totalNumberOfFollowers=totalNumberOfFollowers, totalNumberOfFollowing=totalNumberOfFollowing, totalPosts=len(sorted_data))
-
-    if request.method == 'POST':
-        return render_template()
+        # return {"data": sorted_data, 'user': userInfo}
+        return render_template('profilepage.html', data=sorted_data, userData=userInfo, myProfile=isThisMyProfile, amIFollowingThisUser=len(amIFollowingThisUser), totalNumberOfFollowers=totalNumberOfFollowers, totalNumberOfFollowing=totalNumberOfFollowing, totalPosts=len(sorted_data))
 
 
 @app.route('/followuser/<userIdToFollow>', methods=['POST'])
@@ -190,7 +159,7 @@ def allFollowing(userIdToCheckFollowingOf):
 
     for item in data:
         for item2 in users:
-            if item["followed_by"] == item2["userId"]:
+            if item["following"] == item2["userId"]:
                 item.update(item2)
                 break
     # return {'data': data}

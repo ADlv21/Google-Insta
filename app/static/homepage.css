@@ -1,10 +1,10 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
   
-  header {
+header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -13,9 +13,9 @@
     border-bottom: 1px solid #dbdbdb;
   }
   
-  .logo img {
-    height: 40px;
-  }
+.logo img {
+  height: 40px;
+}
   
   .search-box select {
     width: 200px;
@@ -146,18 +146,18 @@
     cursor: pointer;
   }
   
-  input[type=text] {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    background-color: #f8f8f8;
-    font-size: 16px;
-    font-family: Arial, sans-serif;
-    color: #555;
-  }
+input[type=text] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  color: #555;
+}
 
 .hidden{
   display: none;

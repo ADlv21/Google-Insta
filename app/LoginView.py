@@ -58,8 +58,7 @@ def root():
             error_message = str(exc)
 
     # render the template with the last times we have
-    resp = make_response(render_template(
-        'index.html', user_data=claims, error_message=error_message))
+    resp = make_response(render_template('index.html', user_data=claims, error_message=error_message))
     resp.set_cookie('user_id', userId)
     resp.set_cookie('email', email)
     resp.set_cookie('name', name)

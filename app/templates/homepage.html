@@ -54,7 +54,7 @@
     </header>
     <main class="main-content">
       <div class="posts">
-        {% for item in data %}
+        {% for item in data[:50] %}
         <div class="post">
           <div class="post-info">
             <div class="post-author">
@@ -70,10 +70,13 @@
             </div>
             <form action="/post/comment/{{item.postId}}" method="post">
               <input
+                required
+                title="Please enter your comment"
                 type="text"
                 name="comment"
                 id="comment"
                 maxlength="200"
+                minlength="5"
                 placeholder="{{item.postId}}"
               />
               <button class="button" type="submit">Post Comment</button>

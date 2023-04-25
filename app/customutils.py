@@ -1,6 +1,7 @@
 from google.cloud import storage
 from google.cloud import datastore
 import base64
+from datetime import datetime
 from PIL import Image
 from io import BytesIO
 from app.local_constants import PROJECT_STORAGE_BUCKET, SERVICE_ACCOUNT_JSON
@@ -13,6 +14,21 @@ datastore_client = datastore.Client()
 class Utils:
     def __init__(self, user_id):
         self.user_id = user_id
+
+    def fetchPostsByUserId(userId):
+        query = datastore_client.query(kind='Posts')
+        query.add_filter('userId', '=', userId)
+        results = list(query.fetch())
+        data = []
+        for result in results:
+            data.append({
+                "postId": result.key.id_or_name,
+                "userId": result['userId'],
+                "caption": result['caption'],
+                "createdTime": datetime.fromtimestamp(result['createdTime']).strftime("%d/%m/%y %H:%M"),
+                "imagePath": result['imagePath']
+            })
+        return data
 
     def addUserPostImage(file, imagePath: str):
         # Connect to Google Cloud Storage
@@ -106,7 +122,7 @@ class Utils:
                 "userId": result['user_id'],
                 "name": result['name']
             })
-        return userInfo
+        return userInfo[0]
 
     """
     FOLLOW USER BY ID
