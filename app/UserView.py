@@ -49,7 +49,8 @@ def homepage():
             if image_path in userImagesDict:
                 item["image"] = userImagesDict[image_path]
 
-        sorted_data = sorted(followingUserPosts,key=lambda k: k['createdTime'], reverse=True)
+        sorted_data = sorted(followingUserPosts,
+                             key=lambda k: k['createdTime'], reverse=True)
 
         for item1 in sorted_data:
             for item2 in followingUsersData:
@@ -69,7 +70,7 @@ def homepage():
                     if "comments" not in post2:
                         post2["comments"] = []
                     post2["comments"].append(post1)
-
+        # return {'comm': comments, 'data': sorted_data}
         return render_template('homepage.html', userId=USERID, userData=userInfo, data=sorted_data)
 
 
@@ -85,14 +86,17 @@ def userProfilePage(dynamicUserId):
     """
     Checks wheter logged in user is following the user
     """
-    amIFollowingThisUser = Utils.isUserFollowingTheUserId(userId=USER_ID, userIdToCheckForFollowing=dynamicUserId)
+    amIFollowingThisUser = Utils.isUserFollowingTheUserId(
+        userId=USER_ID, userIdToCheckForFollowing=dynamicUserId)
 
     if request.method == 'GET':
         userInfo = Utils.userInfoByID(dynamicUserId)
 
-        totalNumberOfFollowers = len(Utils.allFollowers(userIdToCheckFollowersOf=dynamicUserId))
+        totalNumberOfFollowers = len(Utils.allFollowers(
+            userIdToCheckFollowersOf=dynamicUserId))
 
-        totalNumberOfFollowing = len(Utils.allFollowing(userIdToCheckFollowingOf=dynamicUserId))
+        totalNumberOfFollowing = len(Utils.allFollowing(
+            userIdToCheckFollowingOf=dynamicUserId))
 
         postData = Utils.fetchPostsByUserId(userId=dynamicUserId)
 
@@ -102,15 +106,16 @@ def userProfilePage(dynamicUserId):
             if image_path in userImagesDict:
                 item["image"] = userImagesDict[image_path]
 
-        sorted_data = sorted(postData, key=lambda k: k['createdTime'], reverse=True)
+        sorted_data = sorted(
+            postData, key=lambda k: k['createdTime'], reverse=True)
 
         for item1 in sorted_data:
             if item1['userId'] == userInfo['userId']:
                 item1['name'] = userInfo['name']
                 item1['email'] = userInfo['email']
 
-        #return {'d': postData}
-        return render_template('profilepage.html',navbarData=USER_ID, data=sorted_data, userData=userInfo, myProfile=isThisMyProfile, amIFollowingThisUser=len(amIFollowingThisUser), totalNumberOfFollowers=totalNumberOfFollowers, totalNumberOfFollowing=totalNumberOfFollowing, totalPosts=len(sorted_data))
+        # return {'d': postData}
+        return render_template('profilepage.html', navbarData=USER_ID, data=sorted_data, userData=userInfo, myProfile=isThisMyProfile, amIFollowingThisUser=len(amIFollowingThisUser), totalNumberOfFollowers=totalNumberOfFollowers, totalNumberOfFollowing=totalNumberOfFollowing, totalPosts=len(sorted_data))
 
 
 @app.route('/followuser/<userIdToFollow>', methods=['POST'])
@@ -124,7 +129,8 @@ def followUserById(userIdToFollow):
     UNFOLLOW USER
     """
     if request.method == 'POST':
-        result = Utils.followUserByUserId(userId=USER_ID, userIdToFollow=userIdToFollow)
+        result = Utils.followUserByUserId(
+            userId=USER_ID, userIdToFollow=userIdToFollow)
         return redirect(f'/user/{userIdToFollow}')
 
 
@@ -139,7 +145,8 @@ def unFollowUserById(userIdToUnFollow):
     UNFOLLOW USER
     """
     if request.method == 'POST':
-        result = Utils.unFollowUserByUserId(userId=USER_ID, userIdToUnFollow=userIdToUnFollow)
+        result = Utils.unFollowUserByUserId(
+            userId=USER_ID, userIdToUnFollow=userIdToUnFollow)
         return redirect(f'/user/{userIdToUnFollow}')
 
 
@@ -148,7 +155,8 @@ def allFollowers(userIdToCheckFollowersOf):
     """
     Fetches all Followers users of current user
     """
-    data = Utils.allFollowers(userIdToCheckFollowersOf=userIdToCheckFollowersOf)
+    data = Utils.allFollowers(
+        userIdToCheckFollowersOf=userIdToCheckFollowersOf)
     """
     Fetches every user's Data
     """
@@ -171,7 +179,8 @@ def allFollowing(userIdToCheckFollowingOf):
     """
     Fetches all Following users of current user
     """
-    data = Utils.allFollowing(userIdToCheckFollowingOf=userIdToCheckFollowingOf)
+    data = Utils.allFollowing(
+        userIdToCheckFollowingOf=userIdToCheckFollowingOf)
     """
     Fetches every user's Data
     """

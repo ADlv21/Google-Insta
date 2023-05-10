@@ -36,7 +36,7 @@ def addUserPost():
 def addCommentToPost(postId):
 
     if request.method == 'POST':
-        USER_ID = request.cookies.get('user_id')
+        USER_ID = request.cookies.get('userId')
         EMAIL = request.cookies.get('email')
         NAME = request.cookies.get('name')
         

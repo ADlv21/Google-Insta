@@ -81,7 +81,8 @@
             <div class="post-comments">
               {% for comment in item.comments[:5] %}
               <div class="comment">
-                <a href="">{{comment.name}}</a> {{comment.comment}}
+                <a href="user/{{comment.userId}}">{{comment.name}}</a>
+                {{comment.comment}}
               </div>
               {% endfor %} {% for comment in item.comments[5:] %}
               <div class="comment hidden">

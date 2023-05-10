@@ -1,3 +1,3 @@
-PROJECT_NAME = 'Insta-Cloud'
-PROJECT_STORAGE_BUCKET = 'insta-cloud-99d25.appspot.com'
-SERVICE_ACCOUNT_JSON = 'insta-cloud-99d25-df80f88aaf72.json'
+PROJECT_NAME = 'PythonApp'
+PROJECT_STORAGE_BUCKET = 'pythonapp-6bfb7.appspot.com'
+SERVICE_ACCOUNT_JSON = 'pythonapp-6bfb7-4d8fb9179403.json'

@@ -36,7 +36,6 @@ class Utils:
         blob = bucket.blob(imagePath)
         blob.upload_from_string(file.read(), content_type=file.content_type)
 
-
     def createUserPost(createdTime, userId, caption, imagePath):
         entity = datastore.Entity(key=client.key('UserPosts'))
         entity.update(
@@ -51,7 +50,7 @@ class Utils:
         return entity.key.id
 
     def fetchPostComments():
-        query = client.query(kind='Comments')
+        query = client.query(kind='UserComments')
         query.order = ['-createdTime']
         results = list(query.fetch())
         commentData = []

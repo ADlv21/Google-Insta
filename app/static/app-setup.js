@@ -1,11 +1,11 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyAvJhTtJoozd_h0LDFAzhFI8pvDkceM9Pg",
-  authDomain: "insta-cloud-99d25.firebaseapp.com",
-  projectId: "insta-cloud-99d25",
-  storageBucket: "insta-cloud-99d25.appspot.com",
-  messagingSenderId: "799654185244",
-  appId: "1:799654185244:web:cb94e8c7b67fb1a3f112d9",
-  measurementId: "G-LWEGXG18E4",
+  apiKey: "AIzaSyCf-PUFeGH1hsRpUKwLkqbHm-MI0eIHwR4",
+  authDomain: "pythonapp-6bfb7.firebaseapp.com",
+  projectId: "pythonapp-6bfb7",
+  storageBucket: "pythonapp-6bfb7.appspot.com",
+  messagingSenderId: "459350925827",
+  appId: "1:459350925827:web:4266c9700321722b452436",
+  measurementId: "G-DJHR3504VW",
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
