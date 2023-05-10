@@ -7,16 +7,13 @@ from io import BytesIO
 from app.local_constants import PROJECT_STORAGE_BUCKET, SERVICE_ACCOUNT_JSON
 
 BUCKET_NAME = PROJECT_STORAGE_BUCKET
-
-datastore_client = datastore.Client()
+client = datastore.Client()
 
 
 class Utils:
-    def __init__(self, user_id):
-        self.user_id = user_id
 
     def fetchPostsByUserId(userId):
-        query = datastore_client.query(kind='Posts')
+        query = client.query(kind='UserPosts')
         query.add_filter('userId', '=', userId)
         results = list(query.fetch())
         data = []
@@ -39,8 +36,9 @@ class Utils:
         blob = bucket.blob(imagePath)
         blob.upload_from_string(file.read(), content_type=file.content_type)
 
+
     def createUserPost(createdTime, userId, caption, imagePath):
-        entity = datastore.Entity(key=datastore_client.key('Posts'))
+        entity = datastore.Entity(key=client.key('UserPosts'))
         entity.update(
             {
                 'userId': userId,
@@ -49,15 +47,16 @@ class Utils:
                 'createdTime': createdTime
             }
         )
-        datastore_client.put(entity)
+        client.put(entity)
         return entity.key.id
 
     def fetchPostComments():
-        query = datastore_client.query(kind='Comment')
+        query = client.query(kind='Comments')
+        query.order = ['-createdTime']
         results = list(query.fetch())
-        commentInfo = []
+        commentData = []
         for result in results:
-            commentInfo.append({
+            commentData.append({
                 'userId': result['userId'],
                 'name': result['name'],
                 'email': result['email'],
@@ -65,7 +64,11 @@ class Utils:
                 'postId': result['postId'],
                 'createdTime': result['createdTime']
             })
-        return commentInfo
+        return commentData
+
+    """
+    IMAGES
+    """
 
     def getAllUserPostImages(username):
         storage_client = storage.Client().from_service_account_json(SERVICE_ACCOUNT_JSON)
@@ -98,28 +101,28 @@ class Utils:
         return result_dict
 
     def allUsersInfo():
-        query = datastore_client.query(kind='Users')
+        query = client.query(kind='UserProfile')
         results = list(query.fetch())
         userInfo = []
         for result in results:
             userInfo.append({
                 "id": result.key.id_or_name,
                 "email": result['email'],
-                "userId": result['user_id'],
+                "userId": result['userId'],
                 "name": result['name']
             })
         return userInfo
 
     def userInfoByID(userId):
-        query = datastore_client.query(kind='Users')
-        query.add_filter('user_id', '=', userId)
+        query = client.query(kind='UserProfile')
+        query.add_filter('userId', '=', userId)
         results = list(query.fetch())
         userInfo = []
         for result in results:
             userInfo.append({
                 "id": result.key.id_or_name,
                 "email": result['email'],
-                "userId": result['user_id'],
+                "userId": result['userId'],
                 "name": result['name']
             })
         return userInfo[0]
@@ -128,14 +131,14 @@ class Utils:
     FOLLOW USER BY ID
     """
     def followUserByUserId(userId, userIdToFollow):
-        entity = datastore.Entity(key=datastore_client.key('Follow'))
+        entity = datastore.Entity(key=client.key('FollowTable'))
         entity.update(
             {
                 'following': userIdToFollow,
                 'followed_by': userId,
             }
         )
-        datastore_client.put(entity)
+        client.put(entity)
         return {
             'following': userIdToFollow,
             'followed_by': userId,
@@ -146,7 +149,7 @@ class Utils:
     """
     def unFollowUserByUserId(userId, userIdToUnFollow):
 
-        query = datastore_client.query(kind='Follow')
+        query = client.query(kind='FollowTable')
         query.add_filter('followed_by', '=', userId)
         query.add_filter('following', '=', userIdToUnFollow)
         results = list(query.fetch())
@@ -158,12 +161,12 @@ class Utils:
                 "following": result['following'],
             })
 
-        entity = datastore_client.key('Follow', followingInfo[0]['id'])
-        datastore_client.delete(entity)
+        entity = client.key('FollowTable', followingInfo[0]['id'])
+        client.delete(entity)
         return {'Data': followingInfo[0]['id']}
 
     def isUserFollowingTheUserId(userId, userIdToCheckForFollowing):
-        query = datastore_client.query(kind='Follow')
+        query = client.query(kind='FollowTable')
         query.add_filter('followed_by', '=', userId)
         query.add_filter('following', '=', userIdToCheckForFollowing)
         results = list(query.fetch())
@@ -178,8 +181,9 @@ class Utils:
         return userInfo
 
     def allFollowers(userIdToCheckFollowersOf):
-        query = datastore_client.query(kind='Follow')
+        query = client.query(kind='FollowTable')
         query.add_filter('following', '=', userIdToCheckFollowersOf)
+        query.order = ['-following']
         results = list(query.fetch())
         userInfo = []
         for result in results:
@@ -192,8 +196,9 @@ class Utils:
         return results
 
     def allFollowing(userIdToCheckFollowingOf):
-        query = datastore_client.query(kind='Follow')
+        query = client.query(kind='FollowTable')
         query.add_filter('followed_by', '=', userIdToCheckFollowingOf)
+        query.order = ['-followed_by']
         results = list(query.fetch())
         userInfo = []
         for result in results:
@@ -206,7 +211,7 @@ class Utils:
         return results
 
     def addCommentToPost(createdTime, userId, postId, comment, name, email):
-        entity = datastore.Entity(key=datastore_client.key('Comment'))
+        entity = datastore.Entity(key=client.key('UserComments'))
         entity.update(
             {
                 'userId': userId,
@@ -217,5 +222,5 @@ class Utils:
                 'createdTime': createdTime
             }
         )
-        datastore_client.put(entity)
+        client.put(entity)
         return entity.key.id

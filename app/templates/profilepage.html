@@ -3,9 +3,30 @@
   <head>
     <title>My Instagram Profile</title>
     <link rel="stylesheet" href="../static/profilepage.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
   </head>
   <body>
     <header>
+      <div class="logo">
+        <img
+          src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
+          alt="Instagram Logo"
+        />
+      </div>
+      <div class="menu-icons">
+        <a href="/home"><i class="fa fa-home"></i></a>
+        <a href="/addpost"
+          ><i class="fa fa-plus-circle" aria-hidden="true"></i
+        ></a>
+        <a id="user-profile" href="/user/{{navbarData}}"
+          ><i class="fa fa-user"></i
+        ></a>
+      </div>
+    </header>
+    <div class="header2">
       <img src="../static/assets/superman.png" alt="My Profile Picture" />
       <h1>{{userData.name}}</h1>
       {% if not myProfile%}
@@ -25,17 +46,14 @@
         {% endif %}
       </div>
       {% endif %}
-    </header>
+    </div>
     <section class="bio">
-      <h2>About Me</h2>
-      <h3>{{email}}</h3>
+      <h3>About Me</h3>
       <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere fuga aut
-        quisquam soluta enim! Libero nihil porro nulla sequi perferendis quos
-        reiciendis nemo dolor at, laudantium sapiente eligendi quis aliquam
-        minus id inventore voluptatibus voluptate nostrum. Dolor, corporis
-        molestiae non tenetur eligendi ea nobis delectus nemo consequatur ut
-        autem animi.
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae rem
+        obcaecati in mollitia perferendis soluta voluptas dolor magnam aliquid
+        possimus vel, repudiandae, expedita odit, autem consequuntur amet.
+        Voluptatem, saepe praesentium?
       </p>
       <ul>
         <li>
@@ -72,24 +90,3 @@
     </footer>
   </body>
 </html>
-
-<script>
-  var myUserId = getCookie("user_id");
-  console.log(myUserId);
-
-  // Function to get the value of a cookie
-  function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      var cookies = document.cookie.split(";");
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === name + "=") {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
-</script>

@@ -5,8 +5,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="../static/addpost.css" />
+    <link rel="stylesheet" type="text/css" href="../static/homepage.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
   </head>
   <body>
+    <header>
+      <div class="logo">
+        <img
+          src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
+          alt="Instagram Logo"
+        />
+      </div>
+      <div class="menu-icons">
+        <a href="/home"><i class="fa fa-home"></i></a>
+        <a href="/addpost"><i class="fa fa-plus-circle"></i></a>
+        <a id="user-profile" href="/user/{{userId}}"
+          ><i class="fa fa-user"></i
+        ></a>
+      </div>
+    </header>
     <div class="container">
       <div class="header">
         <h1>Add Post</h1>

@@ -1,7 +1,6 @@
 from app import app
 from flask import render_template, request, redirect
 from app.customutils import Utils
-from datetime import datetime
 from google.cloud import datastore
 
 datastore_client = datastore.Client()
@@ -10,26 +9,32 @@ datastore_client = datastore.Client()
 @app.route('/home', methods=['GET', 'POST'])
 def homepage():
     if request.method == 'GET':
+        """
+        Logged in user's user id
+        """
+        USERID = request.cookies.get('userId')
 
-        # Logged in user's user id
-        USERID = request.cookies.get('user_id')
-
-        # userInfo List to Display all users in searchbar
+        """
+        userInfo List to Display all users in searchbar
+        """
         userInfo = Utils.allUsersInfo()
 
-        # list of users, logged in user is following
+        """
+        list of users, logged in user is following
+        """
         allFollowingUsers = Utils.allFollowing(USERID)
 
-        # Contains ID of all following users and logged in user
+        """
+        Contains ID of all following users and logged in user
+        """
         User_Id_List = []
         User_Id_List.append(USERID)
         for userFollowing in allFollowingUsers:
             User_Id_List.append(userFollowing['following'])
 
-        # This is correct
-        print(User_Id_List)
-
-        # User Data fetched by ID used for displaying posts
+        """
+        User Data fetched by ID used for displaying posts
+        """
         followingUsersData = []
         for user in User_Id_List:
             followingUsersData.append(Utils.userInfoByID(userId=user))
@@ -44,8 +49,7 @@ def homepage():
             if image_path in userImagesDict:
                 item["image"] = userImagesDict[image_path]
 
-        sorted_data = sorted(followingUserPosts,
-                             key=lambda k: k['createdTime'], reverse=True)
+        sorted_data = sorted(followingUserPosts,key=lambda k: k['createdTime'], reverse=True)
 
         for item1 in sorted_data:
             for item2 in followingUsersData:
@@ -66,101 +70,120 @@ def homepage():
                         post2["comments"] = []
                     post2["comments"].append(post1)
 
-        # print(sorted_data)
-        # return {'sorted_data': sorted_data, 'comments': comm}
-        # return {'data': allFollowingUsers}
-        # return {'Posts': followingUserPosts}
         return render_template('homepage.html', userId=USERID, userData=userInfo, data=sorted_data)
 
 
-@app.route('/user/<urlID>', methods=['GET', 'POST'])
-def userProfilePage(urlID):
-    USER_ID = request.cookies.get('user_id')
+@app.route('/user/<dynamicUserId>', methods=['GET', 'POST'])
+def userProfilePage(dynamicUserId):
+    USER_ID = request.cookies.get('userId')
 
-    isThisMyProfile = urlID == USER_ID
-    print("This is my profile ? ", isThisMyProfile)
+    """
+    Checks whether url user id in profile page matches with logged in user to decide to render follow/unfollow buttonn or not
+    """
+    isThisMyProfile = dynamicUserId == USER_ID
 
-    amIFollowingThisUser = Utils.isUserFollowingTheUserId(
-        userId=USER_ID, userIdToCheckForFollowing=urlID)
+    """
+    Checks wheter logged in user is following the user
+    """
+    amIFollowingThisUser = Utils.isUserFollowingTheUserId(userId=USER_ID, userIdToCheckForFollowing=dynamicUserId)
 
     if request.method == 'GET':
-        # userInfo List to Display all users in searchbar
-        userInfo = Utils.userInfoByID(urlID)
+        userInfo = Utils.userInfoByID(dynamicUserId)
 
-        totalNumberOfFollowers = len(
-            Utils.allFollowers(userIdToCheckFollowersOf=urlID))
+        totalNumberOfFollowers = len(Utils.allFollowers(userIdToCheckFollowersOf=dynamicUserId))
 
-        totalNumberOfFollowing = len(
-            Utils.allFollowing(userIdToCheckFollowingOf=urlID))
+        totalNumberOfFollowing = len(Utils.allFollowing(userIdToCheckFollowingOf=dynamicUserId))
 
-        postData = Utils.fetchPostsByUserId(userId=urlID)
+        postData = Utils.fetchPostsByUserId(userId=dynamicUserId)
 
-        userImagesDict = Utils.getAllUserPostImages(urlID)
+        userImagesDict = Utils.getAllUserPostImages(dynamicUserId)
         for item in postData:
             image_path = item["imagePath"]
             if image_path in userImagesDict:
                 item["image"] = userImagesDict[image_path]
 
-        sorted_data = sorted(
-            postData, key=lambda k: k['createdTime'], reverse=True)
+        sorted_data = sorted(postData, key=lambda k: k['createdTime'], reverse=True)
 
         for item1 in sorted_data:
             if item1['userId'] == userInfo['userId']:
                 item1['name'] = userInfo['name']
                 item1['email'] = userInfo['email']
 
-        # return {'data': len(amIFollowingThisUser)}
-        # return {"data": sorted_data, 'user': userInfo}
-        return render_template('profilepage.html', data=sorted_data, userData=userInfo, myProfile=isThisMyProfile, amIFollowingThisUser=len(amIFollowingThisUser), totalNumberOfFollowers=totalNumberOfFollowers, totalNumberOfFollowing=totalNumberOfFollowing, totalPosts=len(sorted_data))
+        #return {'d': postData}
+        return render_template('profilepage.html',navbarData=USER_ID, data=sorted_data, userData=userInfo, myProfile=isThisMyProfile, amIFollowingThisUser=len(amIFollowingThisUser), totalNumberOfFollowers=totalNumberOfFollowers, totalNumberOfFollowing=totalNumberOfFollowing, totalPosts=len(sorted_data))
 
 
 @app.route('/followuser/<userIdToFollow>', methods=['POST'])
 def followUserById(userIdToFollow):
-    USER_ID = request.cookies.get('user_id')
+    """
+    GETS USER ID FROM COOKIES
+    """
+    USER_ID = request.cookies.get('userId')
 
+    """
+    UNFOLLOW USER
+    """
     if request.method == 'POST':
-        result = Utils.followUserByUserId(
-            userId=USER_ID, userIdToFollow=userIdToFollow)
+        result = Utils.followUserByUserId(userId=USER_ID, userIdToFollow=userIdToFollow)
         return redirect(f'/user/{userIdToFollow}')
 
 
 @app.route('/unfollowuser/<userIdToUnFollow>', methods=['POST'])
 def unFollowUserById(userIdToUnFollow):
-    USER_ID = request.cookies.get('user_id')
+    """
+    GETS USER ID FROM COOKIES
+    """
+    USER_ID = request.cookies.get('userId')
 
+    """
+    UNFOLLOW USER
+    """
     if request.method == 'POST':
-        result = Utils.unFollowUserByUserId(
-            userId=USER_ID, userIdToUnFollow=userIdToUnFollow)
+        result = Utils.unFollowUserByUserId(userId=USER_ID, userIdToUnFollow=userIdToUnFollow)
         return redirect(f'/user/{userIdToUnFollow}')
 
 
 @app.route('/user/<userIdToCheckFollowersOf>/followers')
 def allFollowers(userIdToCheckFollowersOf):
-
-    data = Utils.allFollowers(
-        userIdToCheckFollowersOf=userIdToCheckFollowersOf)
+    """
+    Fetches all Followers users of current user
+    """
+    data = Utils.allFollowers(userIdToCheckFollowersOf=userIdToCheckFollowersOf)
+    """
+    Fetches every user's Data
+    """
     users = Utils.allUsersInfo()
 
+    """
+    Matches User id in Follow Table's Followed_BY Column and UserId in UserProfile Table
+    And appends data to get complete data on following user
+    """
     for item in data:
         for item2 in users:
             if item["followed_by"] == item2["userId"]:
                 item.update(item2)
                 break
-    # return {'data': data}
     return render_template('followers.html', data=data)
 
 
 @app.route('/user/<userIdToCheckFollowingOf>/following')
 def allFollowing(userIdToCheckFollowingOf):
-
-    data = Utils.allFollowing(
-        userIdToCheckFollowingOf=userIdToCheckFollowingOf)
+    """
+    Fetches all Following users of current user
+    """
+    data = Utils.allFollowing(userIdToCheckFollowingOf=userIdToCheckFollowingOf)
+    """
+    Fetches every user's Data
+    """
     users = Utils.allUsersInfo()
 
+    """
+    Matches User id in Follow Table's Following Column and UserId in UserProfile Table
+    And appends data to get complete data on following user
+    """
     for item in data:
         for item2 in users:
             if item["following"] == item2["userId"]:
                 item.update(item2)
                 break
-    # return {'data': data}
     return render_template('following.html', data=data)

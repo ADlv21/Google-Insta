@@ -3,3 +3,4 @@ google-cloud-datastore==2.4.0
 google-auth==1.30.0
 requests==2.27.1
 protobuf==3.20
+pillow
